@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🌰 AgentShield — AI Infrastructure Threat Intelligence</title>
+  <meta name="description" content="AI-powered threat intelligence dashboard for AI infrastructure security. Monitors API breaches, crypto exploits, supply chain attacks, and model poisoning.">
+  <style>
+    :root {
+      --bg: #0a0e17;
+      --surface: #111827;
+      --surface2: #1a2332;
+      --border: #1e2d3d;
+      --text: #e2e8f0;
+      --muted: #64748b;
+      --accent: #06b6d4;
+      --accent2: #8b5cf6;
+      --critical: #ef4444;
+      --high: #f97316;
+      --medium: #eab308;
+      --low: #22c55e;
+      --infra: #06b6d4;
+      --crypto: #f59e0b;
+      --supply-chain: #8b5cf6;
+      --model: #ec4899;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'SF Mono', 'Fira Code', 'JetBrains Mono', monospace;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+
+    /* 🌰 Header */
+    header {
+      border-bottom: 1px solid var(--border);
+      padding: 20px 0;
+      background: linear-gradient(180deg, #0f1724, var(--bg));
+    }
+    .header-inner {
+      display: flex; justify-content: space-between; align-items: center;
+      flex-wrap: wrap; gap: 12px;
+    }
+    .logo { font-size: 1.5rem; font-weight: 700; }
+    .logo span { color: var(--accent); }
+    .logo .shield { color: var(--accent2); }
+    .meta { color: var(--muted); font-size: 0.8rem; }
+
+    /* 🌰 Threat Level Banner */
+    .threat-banner {
+      padding: 16px 24px; margin: 20px 0; border-radius: 8px;
+      display: flex; align-items: center; gap: 16px;
+      font-weight: 600; font-size: 0.95rem;
+      animation: pulse-glow 2s ease-in-out infinite;
+    }
+    .threat-banner.critical { background: rgba(239,68,68,0.15); border: 1px solid var(--critical); color: var(--critical); }
+    .threat-banner.high { background: rgba(249,115,22,0.15); border: 1px solid var(--high); color: var(--high); }
+    .threat-banner.elevated { background: rgba(234,179,8,0.15); border: 1px solid var(--medium); color: var(--medium); }
+    .threat-banner.low { background: rgba(34,197,94,0.15); border: 1px solid var(--low); color: var(--low); }
+    @keyframes pulse-glow {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.85; }
+    }
+    .threat-indicator {
+      width: 12px; height: 12px; border-radius: 50%;
+      animation: blink 1.5s infinite;
+    }
+    .threat-banner.critical .threat-indicator { background: var(--critical); }
+    .threat-banner.high .threat-indicator { background: var(--high); }
+    .threat-banner.elevated .threat-indicator { background: var(--medium); }
+    .threat-banner.low .threat-indicator { background: var(--low); }
+    @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+    /* 🌰 Stats Grid */
+    .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin: 20px 0; }
+    .stat-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 8px; padding: 16px; text-align: center;
+    }
+    .stat-card .value { font-size: 1.8rem; font-weight: 700; color: var(--accent); }
+    .stat-card .label { font-size: 0.75rem; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
+    .stat-card.critical .value { color: var(--critical); }
+    .stat-card.high .value { color: var(--high); }
+
+    /* 🌰 Section */
+    .section { margin: 28px 0; }
+    .section-title {
+      font-size: 1.1rem; font-weight: 600; margin-bottom: 12px;
+      display: flex; align-items: center; gap: 8px;
+      color: var(--accent);
+    }
+
+    /* 🌰 Brief Card */
+    .brief {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 8px; padding: 24px;
+    }
+    .brief p { margin-bottom: 12px; color: var(--text); }
+    .brief .ai-impact {
+      background: var(--surface2); border-left: 3px solid var(--accent2);
+      padding: 12px 16px; border-radius: 0 8px 8px 0; margin: 16px 0;
+    }
+    .brief .ai-impact h4 { color: var(--accent2); margin-bottom: 6px; font-size: 0.85rem; }
+    .brief ul { padding-left: 20px; }
+    .brief li { margin-bottom: 6px; color: var(--muted); }
+    .brief li::marker { color: var(--accent); }
+
+    /* 🌰 Category Filter Tabs */
+    .filters { display: flex; gap: 8px; margin: 16px 0; flex-wrap: wrap; }
+    .filter-btn {
+      background: var(--surface); border: 1px solid var(--border);
+      color: var(--muted); padding: 6px 14px; border-radius: 20px;
+      cursor: pointer; font-size: 0.8rem; font-family: inherit;
+      transition: all 0.2s;
+    }
+    .filter-btn:hover, .filter-btn.active { border-color: var(--accent); color: var(--accent); }
+    .filter-btn[data-cat="infra"] { --cat-color: var(--infra); }
+    .filter-btn[data-cat="crypto"] { --cat-color: var(--crypto); }
+    .filter-btn[data-cat="supply-chain"] { --cat-color: var(--supply-chain); }
+    .filter-btn[data-cat="model"] { --cat-color: var(--model); }
+    .filter-btn.active[data-cat] { border-color: var(--cat-color); color: var(--cat-color); }
+
+    /* 🌰 Event Cards */
+    .events { display: flex; flex-direction: column; gap: 10px; }
+    .event-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 8px; padding: 16px; border-left: 3px solid var(--muted);
+      transition: border-color 0.2s;
+    }
+    .event-card:hover { border-color: var(--accent); }
+    .event-card.critical { border-left-color: var(--critical); }
+    .event-card.high { border-left-color: var(--high); }
+    .event-card.medium { border-left-color: var(--medium); }
+    .event-card.low { border-left-color: var(--low); }
+    .event-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 8px; }
+    .event-badges { display: flex; gap: 6px; align-items: center; }
+    .badge {
+      font-size: 0.7rem; padding: 2px 8px; border-radius: 10px;
+      font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;
+    }
+    .badge.severity-critical { background: rgba(239,68,68,0.2); color: var(--critical); }
+    .badge.severity-high { background: rgba(249,115,22,0.2); color: var(--high); }
+    .badge.severity-medium { background: rgba(234,179,8,0.2); color: var(--medium); }
+    .badge.severity-low { background: rgba(34,197,94,0.2); color: var(--low); }
+    .badge.cat-infra { background: rgba(6,182,212,0.15); color: var(--infra); }
+    .badge.cat-crypto { background: rgba(245,158,11,0.15); color: var(--crypto); }
+    .badge.cat-supply-chain { background: rgba(139,92,246,0.15); color: var(--supply-chain); }
+    .badge.cat-model { background: rgba(236,72,153,0.15); color: var(--model); }
+    .event-time { font-size: 0.75rem; color: var(--muted); }
+    .event-summary { font-size: 0.85rem; color: var(--muted); line-height: 1.5; }
+    .event-summary a { color: var(--accent); text-decoration: none; }
+    .event-summary a:hover { text-decoration: underline; }
+    .score-bar { width: 60px; height: 4px; background: var(--surface2); border-radius: 2px; margin-top: 8px; }
+    .score-fill { height: 100%; border-radius: 2px; }
+
+    /* 🌰 Top Threats */
+    .top-threats { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px; }
+    .threat-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 8px; padding: 16px;
+    }
+    .threat-card h4 { font-size: 0.9rem; margin-bottom: 6px; }
+    .threat-card p { font-size: 0.8rem; color: var(--muted); }
+
+    /* 🌰 Footer */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 20px 0; margin-top: 40px;
+      text-align: center; color: var(--muted); font-size: 0.75rem;
+    }
+    footer a { color: var(--accent); text-decoration: none; }
+
+    .loading { text-align: center; padding: 60px; color: var(--muted); }
+    .no-data { text-align: center; padding: 40px; color: var(--muted); font-style: italic; }
+
+    @media (max-width: 640px) {
+      .stats { grid-template-columns: repeat(2, 1fr); }
+      .header-inner { flex-direction: column; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container header-inner">
+      <div class="logo">🛡️ <span>Agent</span><span class="shield">Shield</span> 🌰</div>
+      <div class="meta">AI Infrastructure Threat Intelligence</div>
+    </div>
+  </header>
+
+  <main class="container">
+    <div id="threat-banner" class="threat-banner elevated" style="display:none">
+      <div class="threat-indicator"></div>
+      <span id="threat-text">Loading threat level...</span>
+    </div>
+
+    <div id="stats" class="stats"></div>
+
+    <div class="section" id="brief-section" style="display:none">
+      <div class="section-title">🌰 Executive Intelligence Brief</div>
+      <div id="brief" class="brief"></div>
+    </div>
+
+    <div class="section" id="top-threats-section" style="display:none">
+      <div class="section-title">⚡ Top Threats to AI Infrastructure</div>
+      <div id="top-threats" class="top-threats"></div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">📡 Threat Signal Feed</div>
+      <div class="filters">
+        <button class="filter-btn active" data-cat="all">All</button>
+        <button class="filter-btn" data-cat="infra">🏗️ Infra</button>
+        <button class="filter-btn" data-cat="crypto">💰 Crypto</button>
+        <button class="filter-btn" data-cat="supply-chain">📦 Supply Chain</button>
+        <button class="filter-btn" data-cat="model">🧠 Model</button>
+      </div>
+      <div id="events" class="events"><div class="loading">Loading threat data...</div></div>
+    </div>
+  </main>
+
+  <footer>
+    <div class="container">
+      🌰 <strong>AgentShield</strong> — Built by <a href="https://github.com/kai-agent-free">kai-agent-free</a>, an autonomous AI agent 🌰<br>
+      Data: <a href="https://rapidapi.com/">CPW Tracker API</a> · Analysis: <a href="https://docs.github.com/en/github-models">GitHub Models</a> · Updated weekly via GitHub Actions
+    </div>
+  </footer>
+
+  <script>
+    // 🌰 AgentShield Dashboard
+    const CAT_LABELS = { infra: "🏗️ Infrastructure", crypto: "💰 Crypto", "supply-chain": "📦 Supply Chain", model: "🧠 Model/AI" }
+    const CAT_ICONS = { infra: "🏗️", crypto: "💰", "supply-chain": "📦", model: "🧠" }
+
+    let allEvents = []
+    let currentFilter = "all"
+
+    function timeAgo(ts) {
+      const d = new Date(ts)
+      const now = new Date()
+      const diff = (now - d) / 1000
+      if (diff < 3600) return `${Math.floor(diff / 60)}m ago`
+      if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`
+      return `${Math.floor(diff / 86400)}d ago`
+    }
+
+    function linkify(text) {
+      return text.replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank" rel="noopener">source ↗</a>')
+    }
+
+    function renderStats(stats) {
+      const el = document.getElementById("stats")
+      const cats = stats.categoryCounts || {}
+      el.innerHTML = `
+        <div class="stat-card"><div class="value">${stats.total || 0}</div><div class="label">Total Events</div></div>
+        <div class="stat-card critical"><div class="value">${stats.severityCounts?.critical || 0}</div><div class="label">Critical</div></div>
+        <div class="stat-card high"><div class="value">${stats.severityCounts?.high || 0}</div><div class="label">High</div></div>
+        <div class="stat-card"><div class="value">${cats.infra || 0}</div><div class="label">🏗️ Infra</div></div>
+        <div class="stat-card"><div class="value">${cats.crypto || 0}</div><div class="label">💰 Crypto</div></div>
+        <div class="stat-card"><div class="value">${cats["supply-chain"] || 0}</div><div class="label">📦 Supply Chain</div></div>
+        <div class="stat-card"><div class="value">${cats.model || 0}</div><div class="label">🧠 Model</div></div>
+      `
+    }
+
+    function renderBrief(brief) {
+      if (!brief || !brief.executiveSummary) return
+      document.getElementById("brief-section").style.display = "block"
+      const el = document.getElementById("brief")
+      el.innerHTML = `
+        <p>${brief.executiveSummary}</p>
+        ${brief.aiInfraImpact ? `<div class="ai-impact"><h4>🌰 AI Infrastructure Impact</h4><p>${brief.aiInfraImpact}</p></div>` : ""}
+        ${brief.keyFindings?.length ? `<h4 style="margin:12px 0 6px;font-size:0.85rem">Key Findings</h4><ul>${brief.keyFindings.map(f => `<li>${f}</li>`).join("")}</ul>` : ""}
+        ${brief.trendAnalysis ? `<h4 style="margin:12px 0 6px;font-size:0.85rem">🌰 Trend Analysis</h4><p style="color:var(--muted);font-size:0.85rem">${brief.trendAnalysis}</p>` : ""}
+        ${brief.recommendations?.length ? `<h4 style="margin:12px 0 6px;font-size:0.85rem">Recommendations</h4><ul>${brief.recommendations.map(r => `<li>${r}</li>`).join("")}</ul>` : ""}
+      `
+    }
+
+    function renderTopThreats(threats) {
+      if (!threats?.length) return
+      document.getElementById("top-threats-section").style.display = "block"
+      document.getElementById("top-threats").innerHTML = threats.map(t => `
+        <div class="threat-card">
+          <div class="event-badges" style="margin-bottom:8px">
+            <span class="badge severity-${t.severity}">${t.severity}</span>
+            <span class="badge cat-${t.category}">${CAT_ICONS[t.category] || ""} ${t.category}</span>
+          </div>
+          <h4>${t.title}</h4>
+          <p>${t.impact}</p>
+        </div>
+      `).join("")
+    }
+
+    function renderThreatBanner(level) {
+      const banner = document.getElementById("threat-banner")
+      const cls = (level || "elevated").toLowerCase()
+      banner.className = `threat-banner ${cls}`
+      banner.style.display = "flex"
+      document.getElementById("threat-text").textContent = `Current Threat Level: ${level?.toUpperCase() || "ELEVATED"} 🌰`
+    }
+
+    function renderEvents(events) {
+      const el = document.getElementById("events")
+      if (!events?.length) { el.innerHTML = '<div class="no-data">No threat events found for this period.</div>'; return }
+      const filtered = currentFilter === "all" ? events : events.filter(e => e.category === currentFilter)
+      el.innerHTML = filtered.slice(0, 50).map(e => {
+        const sev = e.severity || "low"
+        const cat = e.category || "infra"
+        const score = e.severityScore || 30
+        const sevColor = `var(--${sev === "critical" ? "critical" : sev === "high" ? "high" : sev === "medium" ? "medium" : "low"})`
+        return `
+          <div class="event-card ${sev}">
+            <div class="event-header">
+              <div class="event-badges">
+                <span class="badge severity-${sev}">${sev}</span>
+                <span class="badge cat-${cat}">${CAT_ICONS[cat] || ""} ${cat}</span>
+                <span style="font-size:0.7rem;color:var(--muted)">${score}/100</span>
+              </div>
+              <span class="event-time">${e.timestamp ? timeAgo(e.timestamp) : ""}</span>
+            </div>
+            <div class="event-summary">${linkify(e.eventSummary || "No summary")}</div>
+            <div class="score-bar"><div class="score-fill" style="width:${score}%;background:${sevColor}"></div></div>
+          </div>
+        `
+      }).join("")
+    }
+
+    // 🌰 Filter buttons
+    document.querySelectorAll(".filter-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"))
+        btn.classList.add("active")
+        currentFilter = btn.dataset.cat
+        renderEvents(allEvents)
+      })
+    })
+
+    // 🌰 Load data
+    async function load() {
+      try {
+        const res = await fetch("data/events.json")
+        const data = await res.json()
+
+        if (data.brief) {
+          // enriched format
+          renderThreatBanner(data.brief.threatLevel)
+          renderStats(data.stats)
+          renderBrief(data.brief)
+          renderTopThreats(data.brief.topThreats)
+          allEvents = data.events || []
+        } else if (Array.isArray(data)) {
+          // raw events format
+          allEvents = data
+          const cats = {}, sevs = { critical: 0, high: 0, medium: 0, low: 0 }
+          for (const e of allEvents) {
+            cats[e.category] = (cats[e.category] || 0) + 1
+            sevs[e.severity] = (sevs[e.severity] || 0) + 1
+          }
+          renderThreatBanner(sevs.critical > 0 ? "CRITICAL" : sevs.high > 3 ? "HIGH" : "ELEVATED")
+          renderStats({ total: allEvents.length, categoryCounts: cats, severityCounts: sevs })
+        }
+        renderEvents(allEvents)
+      } catch (err) {
+        console.error("Failed to load:", err)
+        document.getElementById("events").innerHTML = '<div class="no-data">Failed to load threat data. Deploy the workflow to populate data.</div>'
+      }
+    }
+    load()
+  </script>
+</body>
+</html>

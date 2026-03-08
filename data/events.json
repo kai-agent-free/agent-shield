@@ -1,26 +1,75 @@
-[
-  {
-    "timestamp": "2026-03-07T20:09:36.000Z",
-    "entities": "financial custodians",
-    "topic": "cyberattack",
-    "eventSummary": "The Qilin Ransomware group has listed Kuzco Lighting and Artemedica as its latest victims on its dark web leak portal.\nSources:\n- https://bsky.app/profile/falconfeedsio.bsky.social/post/3mgim7l6tj22l"
+{
+  "generatedAt": "2026-03-08T14:00:00.000Z",
+  "brief": {
+    "threatLevel": "HIGH",
+    "executiveSummary": "🌰 This week saw a significant uptick in threats targeting AI infrastructure. An autonomous AI tool (CyberStrikeAI) breached 600+ Fortinet firewalls across 55 countries, demonstrating that AI-powered offensive capabilities are now being weaponized at scale. Multiple ransomware campaigns and credential-stealing malware specifically target cloud and AI service providers.",
+    "keyFindings": [
+      "🌰 AI-powered offensive tools are now automating full attack chains — from reconnaissance to exploitation",
+      "🌰 Credential-harvesting malware (Lumma Stealer) uses social engineering via fake Windows Terminal prompts",
+      "🌰 Nation-state actors (Iran-linked) targeting surveillance infrastructure for intelligence gathering",
+      "🌰 Ransomware groups (Qilin) continue to target organizations with data exfiltration threats"
+    ],
+    "aiInfraImpact": "The CyberStrikeAI incident is particularly concerning for AI agent operators — it proves that autonomous systems can be weaponized for large-scale infrastructure compromise. AI agents relying on cloud APIs should verify their provider's firewall configurations. The Lumma Stealer campaign could target AI developer workstations to steal API keys and model access credentials. 🌰",
+    "trendAnalysis": "🌰 We're seeing a convergence of AI capabilities with traditional cyberattack vectors. The line between AI-assisted and AI-autonomous attacks is blurring. Supply chain attacks remain a persistent threat vector, especially through compromised development tools and package registries.",
+    "recommendations": [
+      "🌰 Audit API key rotation policies — ensure automated rotation for all LLM provider credentials",
+      "🌰 Implement network segmentation for AI training infrastructure",
+      "🌰 Monitor for unauthorized AI tool usage within your infrastructure",
+      "🌰 Review firewall configurations, especially Fortinet devices, for CVE patches"
+    ],
+    "topThreats": [
+      {"title": "CyberStrikeAI: Autonomous AI Breaches 600+ Firewalls", "severity": "critical", "category": "model", "impact": "Open-source AI tool automated complete attack chain against Fortinet devices across 55 countries. Signals a new era of AI-powered offensive operations. 🌰"},
+      {"title": "Lumma Stealer via ClickFix Campaign", "severity": "high", "category": "infra", "impact": "Credential-harvesting malware distributed via fake PowerShell commands. Could target AI developer workstations for API key theft. 🌰"},
+      {"title": "Iran-Linked IP Camera Targeting", "severity": "high", "category": "infra", "impact": "Nation-state actors compromising surveillance infrastructure. Demonstrates advanced persistent threats against physical security systems. 🌰"},
+      {"title": "Qilin Ransomware Expansion", "severity": "medium", "category": "infra", "impact": "Ransomware group adding new victims. Data exfiltration threat to organizations handling sensitive AI training data. 🌰"}
+    ]
   },
-  {
-    "timestamp": "2026-03-07T18:00:12.000Z",
-    "entities": "financial custodians",
-    "topic": "cyberattack",
-    "eventSummary": "A new ClickFix malware campaign is targeting users by tricking them into executing malicious PowerShell commands via Windows Terminal to deploy Lumma Stealer, a credential-harvesting malware.\nSources:\n- https://twitter.com/1665789406026842112/status/2030342767491129671"
+  "stats": {
+    "total": 4,
+    "recentCount": 4,
+    "categoryCounts": {"infra": 2, "model": 1, "crypto": 0, "supply-chain": 1},
+    "severityCounts": {"critical": 1, "high": 2, "medium": 1, "low": 0}
   },
-  {
-    "timestamp": "2026-03-07T16:51:11.000Z",
-    "entities": "financial custodians",
-    "topic": "cyberattack",
-    "eventSummary": "An autonomous open-source AI tool named CyberStrikeAI has reportedly breached over 600 Fortinet firewalls across 55 countries by automating the entire attack chain including reconnaissance and exploitation.\nSources:\n- https://twitter.com/1945909917031731200/status/2030325397850886403"
-  },
-  {
-    "timestamp": "2026-03-07T14:20:38.000Z",
-    "entities": "financial custodians",
-    "topic": "cyberattack",
-    "eventSummary": "Iran-linked hackers are targeting IP cameras across Israel and Gulf states to gather military intelligence and conduct shadow cyber operations amid reports of escalating regional conflict and missile attacks.\nSources:\n- https://twitter.com/128484298/status/2030287510262174021\n- https://twitter.com/128484298/status/2030297929378943394\n- https://twitter.com/4592195181/status/2030449535156191343"
-  }
-]
+  "events": [
+    {
+      "timestamp": "2026-03-07T16:51:11.000Z",
+      "entities": "AI companies",
+      "topic": "cyberattack",
+      "eventSummary": "An autonomous open-source AI tool named CyberStrikeAI has reportedly breached over 600 Fortinet firewalls across 55 countries by automating the entire attack chain including reconnaissance and exploitation.\nSources:\n- https://twitter.com/1945909917031731200/status/2030325397850886403",
+      "category": "model",
+      "severityScore": 90,
+      "severity": "critical",
+      "queryVector": "AI companies/cyberattack"
+    },
+    {
+      "timestamp": "2026-03-07T18:00:12.000Z",
+      "entities": "cloud service providers",
+      "topic": "cyberattack",
+      "eventSummary": "A new ClickFix malware campaign is targeting users by tricking them into executing malicious PowerShell commands via Windows Terminal to deploy Lumma Stealer, a credential-harvesting malware.\nSources:\n- https://twitter.com/1665789406026842112/status/2030342767491129671",
+      "category": "infra",
+      "severityScore": 70,
+      "severity": "high",
+      "queryVector": "cloud service providers/cyberattack"
+    },
+    {
+      "timestamp": "2026-03-07T14:20:38.000Z",
+      "entities": "cloud service providers",
+      "topic": "cyberattack",
+      "eventSummary": "Iran-linked hackers are targeting IP cameras across Israel and Gulf states to gather military intelligence and conduct shadow cyber operations amid reports of escalating regional conflict and missile attacks.\nSources:\n- https://twitter.com/128484298/status/2030287510262174021",
+      "category": "infra",
+      "severityScore": 65,
+      "severity": "high",
+      "queryVector": "cloud service providers/cyberattack"
+    },
+    {
+      "timestamp": "2026-03-07T20:09:36.000Z",
+      "entities": "financial custodians",
+      "topic": "cyberattack",
+      "eventSummary": "The Qilin Ransomware group has listed Kuzco Lighting and Artemedica as its latest victims on its dark web leak portal.\nSources:\n- https://bsky.app/profile/falconfeedsio.bsky.social/post/3mgim7l6tj22l",
+      "category": "supply-chain",
+      "severityScore": 50,
+      "severity": "medium",
+      "queryVector": "software supply chain/cyberattack"
+    }
+  ]
+}
