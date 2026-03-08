@@ -27,19 +27,19 @@ jobs:
           node-version: '20'
 
       - name: "🌰 Fetch threat data from CPW API"
-        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+        if: (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && secrets.RAPIDAPI_KEY != ''
         run: node scripts/api-call.js
         env:
           RAPIDAPI_KEY: ${{ secrets.RAPIDAPI_KEY }}
 
       - name: "🌰 Run AI threat analysis (GitHub Models)"
-        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+        if: (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && secrets.RAPIDAPI_KEY != ''
         run: node scripts/ai-analysis.js
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: "🌰 Commit updated intelligence"
-        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+        if: (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && secrets.RAPIDAPI_KEY != ''
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "AgentShield Bot 🌰"
